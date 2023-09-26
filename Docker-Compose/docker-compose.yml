@@ -3,17 +3,13 @@ services:
   web:
     build: .
     ports:
-      - "8000:8001"
+      - "3000:8003"
     networks:
       - testnetwork
     volumes:
-      - testvolume:/code
+      - testvolume:/var/node
     environment:
-      FLASK_ENV: development
-  redis:
-    image: "redis:alpine"
-    networks:
-      - testnetwork
+         ENV: development
 networks:
   testnetwork:
 volumes:
