@@ -1,3 +1,19 @@
-pipeline
-{
+pipeline {
+	agent any 
+	stages {
+		stage('Build') {
+			steps{
+				sh 'mvn -f JenkinsPractice/JavaTomcat/pom.xml clean package'
+
+			}
+			post {
+				success {
+					echo "Archive Artifacts" 
+					archiveArtifacts artifacts: '**/*.war'
+					
+				}
+			}
+		}
+	}	
+	
 }
