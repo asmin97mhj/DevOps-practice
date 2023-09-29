@@ -26,9 +26,9 @@ pipeline {
 				sh '''
 			}
 		}
-              stage('Deploy to Staging') {
-			steps {
-                               script{
+		stage('Deploy to Staging') {
+			script {
+				steps {
 				def container_name = 'tomcatstagingenv'
 				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
 
@@ -45,10 +45,35 @@ pipeline {
 				sh '''
 				docker run -itd --name tomcatstagingenv -p 8085:8080 localtomcatimg:$BUILD_NUMBER
 				sh '''
+ 
 			}
 		}
-	}	
-	
+	}
+	stage('Deploy to Production') {
+			steps {
+				timeout(time:1, unit: 'DAYS'){
+					input message: 'Approve Production Deploy'
+				}
+				script {
+				def container_name = 'tomcatproductionenv'
+				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
+
+				if (container_is_running){
+					echo "Container is stopping..."
+					sh "docker stop ${container_name}" //Stops container
+					echo "Removing the stopped container..."
+					sh " docker rm ${container_name}" //Removes container
+				}
+				else{
+					echo "'${container_name}' container is not running "
+				}
+				echo "Running in Production Environment..."
+				sh '''
+				docker run -itd --name tomcatproductionenv -p 8086:8080 tomcatimg:$BUILD_NUMBER
+				sh '''	
+			}
+}
+}
 }
 }
 post {
@@ -58,7 +83,7 @@ post {
             body: "Please go to ${BUILD_URL} and verify the build"
         }
         success {
-            mail bcc: 'xmhjasmin97@gmail.com', body: """Hi Team,
+            mail bcc: '', body: """Hi Team,
 
 Build #$BUILD_NUMBER is successful, please go through the url
 
@@ -67,10 +92,10 @@ $BUILD_URL
 and verify the details.
 
 Regards,
-DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD SUCCESS NOTIFICATION', to: 'asminmaharjan97@gmail.com'
+DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD SUCCESS NOTIFICATION', to: 'xmhjasmin97@gmail.com'
         }
         failure {
-            mail bcc: 'xmhjasmin97@gmail.com', body: """Hi Team,
+            mail bcc: '', body: """Hi Team,
 
 Build #$BUILD_NUMBER is unsuccessful, please go through the url
 
@@ -79,7 +104,8 @@ $BUILD_URL
 and verify the details.
 
 Regards,
-DevOps Team""", cc: 'xmhjasmin97@gmail.com', from: '', replyTo: '', subject: 'BUILD FAILED NOTIFICATION', to: 'asminmaharjan97.@gmail.com'
+DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD FAILED NOTIFICATION', to: 'xmhjasmin97.@gmail.com'
         }
-    }
+    
+}
 
