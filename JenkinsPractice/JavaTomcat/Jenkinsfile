@@ -69,7 +69,7 @@ pipeline {
 				}
 				echo "Running in Production Environment..."
 				sh '''
-				docker run -itd --name tomcatproductionenv -p 8086:8080 tomcatimg:$BUILD_NUMBER
+				docker run -itd --name tomcatproductionenv -p 8086:8080 localtomcatimg:$BUILD_NUMBER
 				sh '''	
 			}
 }
