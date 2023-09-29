@@ -28,7 +28,7 @@ pipeline {
 		}
               stage('Deploy to Staging') {
 			steps {
-				def container_name = 'JavaApp'
+				def container_name = 'tomcatstagingenv'
 				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
 
 				if (container_is_running) {
