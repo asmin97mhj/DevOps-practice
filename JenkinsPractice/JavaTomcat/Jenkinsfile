@@ -57,9 +57,7 @@ pipeline {
 				sh '''	
                               }
                                      }
-}
-}
-post {
+    post {
 	always {
 		mail to: 'xmhjasmin97@gmail.com',
 		            subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is waiting for input",
@@ -90,4 +88,6 @@ Regards,
 DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD FAILED NOTIFICATION', to: 'xmhjasmin97.@gmail.com'
         }
     
+}
+}
 }
