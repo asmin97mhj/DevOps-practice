@@ -48,11 +48,11 @@ pipeline {
 				}
 				else{
 					echo "'${container_name}' container is not running "
-				}
 				echo "Running in Staging Environment..."
 				sh '''
 				docker run -itd --name tomcatstagingenv -p 8085:8080 localtomcatimg:$BUILD_NUMBER
 				sh '''
+}
  
 			}
 		}
@@ -77,11 +77,11 @@ pipeline {
 				}
 				else{
 					echo "'${container_name}' container is not running "
-				}
 				echo "Running in Production Environment..."
 				sh '''
 				docker run -itd --name tomcatproductionenv -p 8086:8080 localtomcatimg:$BUILD_NUMBER
 				sh '''	
+}
 			}
 			}              
     post {
