@@ -35,11 +35,26 @@ pipeline {
                      agent {
                          label 'ubuntu-vm'
 }
-			steps { 
+			steps {
+				script {
+				def container_name = 'tomcatstagingenv'
+				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
+
+				if (container_is_running){
+					echo "Container is stopping..."
+					sh "docker stop ${container_name}" //Stops container
+					echo "Removing the stopped container..."
+					sh " docker rm ${container_name}" //Removes container
+				}
+				else{
+					echo "'${container_name}' container is not running "
+				}
 				echo "Running in Staging Environment..."
 				sh '''
 				docker run -itd --name tomcatstagingenv -p 8085:8080 localtomcatimg:$BUILD_NUMBER
 				sh '''
+ 
+			}
 		}
 	}
 	stage('Deploy to Production') {
@@ -47,10 +62,27 @@ pipeline {
                            label 'ubuntu-vm'
 }
 			steps {
+				timeout(time:1, unit: 'DAYS'){
+					input message: 'Approve Production Deploy'
+				}	
+                script {
+				def container_name = 'tomcatproductionenv'
+				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
+
+				if (container_is_running){
+					echo "Container is stopping..."
+					sh "docker stop ${container_name}" //Stops container
+					echo "Removing the stopped container..."
+					sh " docker rm ${container_name}" //Removes container
+				}
+				else{
+					echo "'${container_name}' container is not running "
+				}
 				echo "Running in Production Environment..."
 				sh '''
 				docker run -itd --name tomcatproductionenv -p 8086:8080 localtomcatimg:$BUILD_NUMBER
 				sh '''	
+			}
 			}              
     post {
 	always {
