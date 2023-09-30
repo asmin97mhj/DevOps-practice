@@ -27,8 +27,8 @@ pipeline {
 			}
 		}
 		stage('Deploy to Staging') {
-			steps {
-				script {
+			script {
+				steps {
 				def container_name = 'tomcatstagingenv'
 				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
 
@@ -51,27 +51,11 @@ pipeline {
 	}
 	stage('Deploy to Production') {
 			steps {
-				timeout(time:1, unit: 'DAYS'){
-					input message: 'Approve Production Deploy'
-				}
-				script {
-				def container_name = 'tomcatproductionenv'
-				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
-
-				if (container_is_running){
-					echo "Container is stopping..."
-					sh "docker stop ${container_name}" //Stops container
-					echo "Removing the stopped container..."
-					sh " docker rm ${container_name}" //Removes container
-				}
-				else{
-					echo "'${container_name}' container is not running "
-				}
 				echo "Running in Production Environment..."
 				sh '''
-				docker run -itd --name tomcatproductionenv -p 8086:8080 localtomcatimg:$BUILD_NUMBER
+				docker run -itd --name tomcatproductionenv -p 8086:8080 tomcatimg:$BUILD_NUMBER
 				sh '''	
-			}
+			
 }
 }
 }
@@ -108,4 +92,3 @@ DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD FAILED NOTIFICATI
         }
     
 }
-
