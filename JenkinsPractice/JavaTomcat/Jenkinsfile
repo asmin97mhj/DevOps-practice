@@ -27,8 +27,8 @@ pipeline {
 			}
 		}
 		stage('Deploy to Staging') {
-			script {
-				steps {
+			steps {
+				script {
 				def container_name = 'tomcatstagingenv'
 				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
 
@@ -55,9 +55,8 @@ pipeline {
 				sh '''
 				docker run -itd --name tomcatproductionenv -p 8086:8080 tomcatimg:$BUILD_NUMBER
 				sh '''	
-			
-}
-}
+                              }
+                                     }
 }
 }
 post {
