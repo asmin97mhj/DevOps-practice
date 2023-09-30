@@ -1,5 +1,7 @@
 pipeline {
-	agent any 
+	agent {
+            label 'ubuntu-vm'
+              }
 	stages {
 		stage('Build') {
 			steps{
@@ -15,6 +17,9 @@ pipeline {
 			}
 		}
 		stage('Create Tomcat Image') {
+                     agent {
+                         label 'ubuntu-vm'
+}
 			steps {
 				copyArtifacts filter: '**/*.war', fingerprintArtifacts: true, projectName: env.JOB_NAME, selector: specific(env.BUILD_NUMBER)
 				echo "Building Docker Image .."
@@ -27,6 +32,9 @@ pipeline {
 			}
 		}
 		stage('Deploy to Staging') {
+                     agent {
+                         label 'ubuntu-vm'
+}
 			steps {
 				script {
 				def container_name = 'tomcatstagingenv'
@@ -50,6 +58,9 @@ pipeline {
 		}
 	}
 	stage('Deploy to Production') {
+                       agent {
+                           label 'ubuntu-vm'
+}
 			steps {
 				timeout(time:1, unit: 'DAYS'){
 					input message: 'Approve Production Deploy'
