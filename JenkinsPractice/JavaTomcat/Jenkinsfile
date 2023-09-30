@@ -56,7 +56,6 @@ pipeline {
 				docker run -itd --name tomcatproductionenv -p 8086:8080 localtomcatimg:$BUILD_NUMBER
 				sh '''	
                               }
-                                     }
     post {
 	always {
 		mail to: 'xmhjasmin97@gmail.com',
@@ -87,7 +86,7 @@ and verify the details.
 Regards,
 DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD FAILED NOTIFICATION', to: 'xmhjasmin97.@gmail.com'
         }
-    
+}
 }
 }
 }
