@@ -51,13 +51,30 @@ pipeline {
 	}
 	stage('Deploy to Production') {
 			steps {
+				timeout(time:1, unit: 'DAYS'){
+					input message: 'Approve Production Deploy'
+				}	
+                script {
+				def container_name = 'tomcatproductionenv'
+				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
+
+				if (container_is_running){
+					echo "Container is stopping..."
+					sh "docker stop ${container_name}" //Stops container
+					echo "Removing the stopped container..."
+					sh " docker rm ${container_name}" //Removes container
+				}
+				else{
+					echo "'${container_name}' container is not running "
+				}
 				echo "Running in Production Environment..."
 				sh '''
-				docker run -itd --name tomcatproductionenv -p 8086:8080 localtomcatimg:$BUILD_NUMBER
+				docker run -itd --name tomcatproductionenv -p 8086:8080 tomcatimg:$BUILD_NUMBER
 				sh '''	
-                              }
+			}
+			}              
     post {
-	always {
+	always {a
 		mail to: 'xmhjasmin97@gmail.com',
 		            subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is waiting for input",
             body: "Please go to ${BUILD_URL} and verify the build"
