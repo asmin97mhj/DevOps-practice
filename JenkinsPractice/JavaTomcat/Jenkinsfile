@@ -1,5 +1,7 @@
 pipeline {
-	agent any 
+	agent {
+            label 'ubuntu-vm'
+              }
 	stages {
 		stage('Build') {
 			steps{
@@ -15,6 +17,9 @@ pipeline {
 			}
 		}
 		stage('Create Tomcat Image') {
+                     agent {
+                         label 'ubuntu-vm'
+}
 			steps {
 				copyArtifacts filter: '**/*.war', fingerprintArtifacts: true, projectName: env.JOB_NAME, selector: specific(env.BUILD_NUMBER)
 				echo "Building Docker Image .."
@@ -26,6 +31,90 @@ pipeline {
 				sh '''
 			}
 		}
-	}	
-	
+		stage('Deploy to Staging') {
+                     agent {
+                         label 'ubuntu-vm'
+}
+			steps {
+				script {
+				def container_name = 'tomcatstagingenv'
+				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
+
+				if (container_is_running){
+					echo "Container is stopping..."
+					sh "docker stop ${container_name}" //Stops container
+					echo "Removing the stopped container..."
+					sh " docker rm ${container_name}" //Removes container
+				}
+				else{
+					echo "'${container_name}' container is not running "
+				}
+				echo "Running in Staging Environment..."
+				sh '''
+				docker run -itd --name tomcatstagingenv -p 8085:8080 localtomcatimg:$BUILD_NUMBER
+				sh '''
+ 
+			}
+		}
+	}
+	stage('Deploy to Production') {
+                       agent {
+                           label 'ubuntu-vm'
+}
+			steps {
+				timeout(time:1, unit: 'DAYS'){
+					input message: 'Approve Production Deploy'
+				}	
+                script {
+				def container_name = 'tomcatproductionenv'
+				def container_is_running = sh(script: "docker ps -q -f name='${container_name}'", returnStatus: true) == 0
+
+				if (container_is_running){
+					echo "Container is stopping..."
+					sh "docker stop ${container_name}" //Stops container
+					echo "Removing the stopped container..."
+					sh " docker rm ${container_name}" //Removes container
+				}
+				else{
+					echo "'${container_name}' container is not running "
+				}
+				echo "Running in Production Environment..."
+				sh '''
+				docker run -itd --name tomcatproductionenv -p 8086:8080 localtomcatimg:$BUILD_NUMBER
+				sh '''	
+			}
+			}              
+    post {
+	always {
+		mail to: 'xmhjasmin97@gmail.com',
+		            subject: "Job '${JOB_NAME}' (${BUILD_NUMBER}) is waiting for input",
+            body: "Please go to ${BUILD_URL} and verify the build"
+        }
+        success {
+            mail bcc: '', body: """Hi Team,
+
+Build #$BUILD_NUMBER is successful, please go through the url
+
+$BUILD_URL
+
+and verify the details.
+
+Regards,
+DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD SUCCESS NOTIFICATION', to: 'xmhjasmin97@gmail.com'
+        }
+        failure {
+            mail bcc: '', body: """Hi Team,
+
+Build #$BUILD_NUMBER is unsuccessful, please go through the url
+
+$BUILD_URL
+
+and verify the details.
+
+Regards,
+DevOps Team""", cc: '', from: '', replyTo: '', subject: 'BUILD FAILED NOTIFICATION', to: 'xmhjasmin97.@gmail.com'
+        }
+}
+}
+}
 }
