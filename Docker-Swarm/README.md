@@ -6,7 +6,7 @@ docker swarm init --advertise -addr 192.168.162.11 (On Worker Node)
 docker swarm join-token worker
 
 # On worker node
-docker swarm join \ --token copy and paste token 192.168.162.101:2377 (2377 for TCP communication betwn nodes)
+docker swarm join \ --token copy and paste token 192.168.162.10:2377 (2377 for TCP communication betwn nodes)
 
 # Inspect nodes
 docker node inspect node-id --pretty
@@ -22,6 +22,6 @@ docker service create -d --name nginx-service -p 8082:80 --replicas 2 nginx:late
 docker service inspect service-name
 
 # Scaling the service
-docker service scale service-name=no.of tasks to run
+docker service scale service-name = 5 (no.of tasks to run)
 
 
