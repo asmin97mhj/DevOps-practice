@@ -1,0 +1,15 @@
+web ansible_host=192.168.162.30 ansible_user=vagrant ansible_ssh_password=vagrant
+web2 ansible_host=192.168.162.32 ansible_user=vagrant ansible_ssh_password=vagrant
+
+[webservergrp]
+web
+
+[dbservergrp]
+web2
+
+[groups:children]
+webservergrp
+dbservergrp
+
+[groups:vars]
+ansible_ssh_password=vagrant

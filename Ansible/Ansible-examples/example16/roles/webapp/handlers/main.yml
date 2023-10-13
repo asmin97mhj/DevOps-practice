@@ -1,0 +1,6 @@
+---
+# handlers file for webapp
+- name:
+  service:
+    name: chronyd
+    state: restarted    

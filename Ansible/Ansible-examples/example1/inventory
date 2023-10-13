@@ -1,0 +1,3 @@
+web ansible_host=192.168.162.30 ansible_user=vagrant ansible_ssh_password=vagrant
+web2 ansible_host=192.168.162.30 ansible_user=vagrant ansible_ssh_password=vagrant
+

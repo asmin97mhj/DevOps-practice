@@ -1,0 +1,14 @@
+---
+# vars file for webapp
+dbname: devopsdb
+dbuser: devopsuser
+dbpassword: 0123456
+
+usernames:
+  - user3
+  - user4
+
+ntp0: 0.asia/kathmandu.pool.ntp.org
+ntp1: 1.asia/kathmandu.pool.ntp.org
+ntp2: 2.asia/kathmandu.pool.ntp.org
+
