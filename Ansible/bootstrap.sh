@@ -11,11 +11,11 @@ touch /home/vagrant/.hushlogin
 
 # Updating the hosts file for all the 3 nodes with the IP given in vagrantfile
 
-echo -e "192.168.56.17 ansible-host ansible-host\n192.168.56.15 web1.demo.com web1" >> /etc/hosts
+echo -e "192.168.56.31 ansible-host ansible-host\n192.168.56.30 web.demo.com web"\n192.168.162.32 web2.demo.com web2 >> /etc/hosts
 
 # Installing necessary packages 
 
-if [[ $(hostname) != "web3.demo.com" ]]; then
+if [[ $(hostname) != "web2.demo.com" ]]; then
 sudo apt update && sudo apt -y install curl wget net-tools iputils-ping python3-pip sshpass
 else
 sudo yum update && sudo yum -y install curl wget net-tools python3-pip
