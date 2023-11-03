@@ -1,0 +1,49 @@
+---
+- name: Setup webserver
+  hosts: webservergrp
+  become: yes
+  tasks:
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+
+    - name: Start and enable Apache2
+      service:
+        name: apache2
+        state: started
+        enabled: true
+    - name: Copy files
+      copy: 
+        src: ./index.html
+        dest: /var/www/html/index.html    
+
+- name: Setup DBserver
+  hosts: dbservergrp
+  become: yes
+  tasks:
+    - name: Install Python MySQL 
+      yum:
+        name: python3-PyMySQL
+        state: present       
+    - name: Install MariaDB
+      yum:
+        name: mariadb-server
+        state: present
+    - name: Start and enable MariaDB server
+      service:
+        name: mariadb
+        state: started
+        enabled: true 
+# Create a database
+    - name: Create a new database
+      mysql_db: 
+        name: devopsdb
+        state: present        
+# Create a database user 
+    - name: Create a new database user
+      mysql_user: 
+        name: devopsuser
+        password: 0123456
+        priv: '*.*:ALL'
+        state: present        

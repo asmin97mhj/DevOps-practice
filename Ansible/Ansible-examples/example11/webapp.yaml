@@ -1,0 +1,53 @@
+---
+- name: Setup NTP on servers
+  hosts: all
+  become: yes
+  tasks:
+    - debug: 
+        var: ansible_distribution      
+    - name: Install chrony on Ubuntu
+      apt:
+        name: "{{item}}"
+        state: present
+      when: 
+        ansible_distribution == "Ubuntu"
+      loop: 
+        - chrony
+        - git
+        - zip
+        - unzip  
+    - name: Start and enable chrony on Ubuntu
+      service:
+        name: chronyd
+        state: started
+        enabled: true
+      when: 
+        ansible_distribution == "Ubuntu"     
+    - name: Install chrony on CentOS
+      yum:
+        name: "{{item}}"
+        state: present
+      when:
+        ansible_distribution == "CentOS"
+      loop: 
+        - chrony
+        - git
+        - zip
+        - unzip  
+    - name: Start and enable chrony on CentOS
+      service:
+        name: chronyd
+        state: started
+        enabled: true
+      when:
+        ansible_distribution == "CentOS"
+    - name: Add group
+      group:
+        name: devops
+        state: present
+    - name: Add users
+      user:
+        name: "{{item}}"
+        group: devops        
+        state: present
+      loop: "{{usernames}}"      

@@ -1,0 +1,4 @@
+ansible-host
+
+[ubuntu]
+web
