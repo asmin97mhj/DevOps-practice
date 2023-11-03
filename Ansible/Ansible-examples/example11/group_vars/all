@@ -1,0 +1,7 @@
+dbname: devopsdb
+dbuser: devopsuser
+dbpassword: 0123456
+
+usernames:
+  - user3
+  - user4
